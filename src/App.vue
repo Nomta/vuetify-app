@@ -1,19 +1,19 @@
 <template>
   <v-app>
     <v-main>
-      <HelloWorld />
+      <hotels-app />
     </v-main>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import HotelsApp from './components/HotelsApp';
 
 export default {
   name: 'App',
 
   components: {
-    HelloWorld,
+    HotelsApp,
   }
 }
 </script>
