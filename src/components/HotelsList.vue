@@ -1,12 +1,18 @@
 <template>
-  <div>
-    <hotels-list-item v-for="hotel in hotels" :hotel="hotel" :key="hotel.id" />
+  <div v-if="hotels?.length">
+    <hotels-list-item v-for="hotel in hotelsSlice" :hotel="hotel" :key="hotel.id" />
+  </div>
+  <div v-else class="d-flex flex-column align-center">
+    <v-img :src="NotFoundImage" width="238" height="181" />
+    <span class="title">Записей не найдено</span>
   </div>
 </template>
 
 <script>
-import HotelsListItem from '@/components/HotelsListItem.vue';
-import { hotels } from '@/fixtures/hotels';
+import HotelsListItem from '@/components/HotelsListItem.vue'
+import NotFoundImage from '@/assets/NotFound.png'
+
+const MAX_HOTELS_COUNT = 3
 
 export default {
   name: 'HotelsList',
@@ -15,9 +21,22 @@ export default {
     HotelsListItem,
   },
 
+  props: {
+    hotels: {
+      type: Array,
+      default: null
+    },
+  },
+
   data() {
     return {
-      hotels
+      NotFoundImage,
+    }
+  },
+
+  computed: {
+    hotelsSlice() {
+      return this.hotels.slice(0, MAX_HOTELS_COUNT)
     }
   },
 }
