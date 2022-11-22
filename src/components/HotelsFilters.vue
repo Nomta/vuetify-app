@@ -25,13 +25,8 @@
     </div>
 
     <div>
-      <span class="subtitle-2">Цена</span> {{ pricesRange }}
-      <range-filter v-model="pricesRange" :max="prices.max" color="teal" />
-    </div>
-
-    <div>
-      <span class="subtitle-2">Цена до</span>
-      <v-slider v-model="filters.maxPrice" :max="prices.max" thumb-label color="teal" track-color="teal" />
+      <span class="subtitle-2">Цена</span>
+      <range-filter v-model="filters.pricesRange" :max="prices.max" :formatters="formatters" color="teal" />
     </div>
 
     <div class="d-flex flex-column align-stretch">
@@ -47,16 +42,22 @@
 </template>
 
 <script>
-import RangeFilter from '@/components/RangeFilter';
+import { inRange } from 'lodash';
 import { CountFormatter } from '@/utils/CountFormatter'
+import RangeFilter from '@/components/RangeFilter';
 
 const defaultFilters = {
   country: '',
   types: [],
   starsAmount: [],
   reviewsAmount: null,
-  maxPrice: null,
+  pricesRange: [],
 }
+
+const formatters = [
+  (value) => `от ${value} ₽`,
+  (value) => `до ${value} ₽`
+]
 const reviewFormatter = new CountFormatter(['звезда', 'звезды', 'звезд'])
 
 export default {
@@ -76,7 +77,7 @@ export default {
   data() {
     return {
       filters: { ...defaultFilters },
-      pricesRange: [0, 4000]
+      formatters
     }
   },
 
@@ -88,19 +89,7 @@ export default {
         max: Math.max(...prices)
       }
     },
-    // filteredHotels() {
-    //   return this.filterHotels()
-    // }
   },
-
-  // watch: {
-  //   filteredHotels: {
-  //     deep: true,
-  //     handler(value) {
-  //       this.$emit('filter', value)
-  //     }
-  //   }
-  // },
 
   methods: {
     applyFilters() {
@@ -124,7 +113,7 @@ export default {
         if (this.filters.reviewsAmount && hotel.reviews_amount < this.filters.reviewsAmount) {
           return false
         }
-        if (this.filters.maxPrice && hotel.min_price > this.filters.maxPrice) {
+        if (this.filters.pricesRange.length && !inRange(hotel.min_price, ...this.filters.pricesRange)) {
           return false
         }
         return true

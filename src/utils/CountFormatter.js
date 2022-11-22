@@ -1,3 +1,5 @@
+import { inRange } from 'lodash';
+
 export class CountFormatter {
   constructor(entities) {
     this.entities = entities
@@ -6,7 +8,7 @@ export class CountFormatter {
   count(num) {
     const mod100 = num % 100
 
-    if (mod100 > 10 && mod100 < 20) {
+    if (inRange(mod100, 10, 20)) {
       return `${num} ${this.entities[2]}`
     }
 
@@ -16,7 +18,7 @@ export class CountFormatter {
       return `${num} ${this.entities[0]}`
     }
 
-    if (mod10 > 0 && mod10 < 5) {
+    if (inRange(mod10, 2, 5)) {
       return `${num} ${this.entities[1]}`
     }
 
