@@ -72,6 +72,7 @@ export default {
       type: Array,
       default: () => []
     },
+    limit: Number
   },
 
   data() {
@@ -85,7 +86,7 @@ export default {
     prices() {
       const prices = this.hotels.map((hotel) => hotel.min_price)
       return {
-        // min: Math.min(...prices),
+        min: Math.min(...prices),
         max: Math.max(...prices)
       }
     },
@@ -97,27 +98,42 @@ export default {
     },
     resetFilters() {
       this.filters = { ...defaultFilters }
-      this.$emit('filter', [...this.hotels])
+      this.$emit('filter', this.hotels)
     },
     filterHotels() {
-      return this.hotels.filter((hotel) => {
-        if (this.filters.country && hotel.country !== this.filters.country) {
-          return false
+      const hotels = []
+      const limit = this.limit || this.hotels.length
+      let i = 0
+
+      /* filter until get the right amount */
+      while (i < this.hotels.length && hotels.length < limit) {
+        const hotel = this.hotels[i]
+
+        if (this.filterHotel(hotel)) {
+          hotels.push(hotel)
         }
-        if (this.filters.types.length && !this.filters.types.includes(hotel.type)) {
-          return false
-        }
-        if (this.filters.starsAmount.length && !this.filters.starsAmount.includes(hotel.stars)) {
-          return false
-        }
-        if (this.filters.reviewsAmount && hotel.reviews_amount < this.filters.reviewsAmount) {
-          return false
-        }
-        if (this.filters.pricesRange.length && !inRange(hotel.min_price, ...this.filters.pricesRange)) {
-          return false
-        }
-        return true
-      })
+        i++
+      }
+
+      return hotels
+    },
+    filterHotel(hotel) {
+      if (this.filters.country && hotel.country !== this.filters.country) {
+        return false
+      }
+      if (this.filters.types.length && !this.filters.types.includes(hotel.type)) {
+        return false
+      }
+      if (this.filters.starsAmount.length && !this.filters.starsAmount.includes(hotel.stars)) {
+        return false
+      }
+      if (this.filters.reviewsAmount && hotel.reviews_amount < this.filters.reviewsAmount) {
+        return false
+      }
+      if (this.filters.pricesRange.length && !inRange(hotel.min_price, ...this.filters.pricesRange)) {
+        return false
+      }
+      return true
     },
     countStars(amount) {
       return reviewFormatter.count(amount)

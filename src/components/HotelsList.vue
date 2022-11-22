@@ -12,8 +12,6 @@
 import HotelsListItem from '@/components/HotelsListItem.vue'
 import NotFoundImage from '@/assets/NotFound.png'
 
-const MAX_HOTELS_COUNT = 3
-
 export default {
   name: 'HotelsList',
 
@@ -26,6 +24,7 @@ export default {
       type: Array,
       default: null
     },
+    limit: Number
   },
 
   data() {
@@ -36,7 +35,10 @@ export default {
 
   computed: {
     hotelsSlice() {
-      return this.hotels.slice(0, MAX_HOTELS_COUNT)
+      if (this.limit && this.hotels.length > this.limit) {
+        return this.hotels.slice(0, this.limit)
+      }
+      return this.hotels
     }
   },
 }
