@@ -1,35 +1,38 @@
 <template>
   <div>
-    <label>
+    <div>
       <span class="subtitle-2">Страна</span>
       <v-autocomplete v-model="filters.country" :items="hotels" item-text="country" dense outlined
         placeholder="Поиск стран" prepend-inner-icon="mdi-magnify" />
-    </label>
+    </div>
 
-    <label>
+    <div>
       <span class="subtitle-2">Тип</span>
       <v-select v-model="filters.types" :items="hotels" item-text="type" placeholder="Тип" dense outlined multiple />
-    </label>
+    </div>
 
-    <label>
+    <div>
       <span class="subtitle-2">Количество звезд</span>
       <fieldset class="d-block px-2 pb-2 outlined rounded">
-        <!-- looks like vuetify tried and failed to implement the checkbox group from vue-3 -->
-        <v-checkbox v-model="filters.starsAmount" class="d-none" />
         <v-checkbox v-for="amount in 5" v-model="filters.starsAmount" :label="countStars(amount)" :value="amount"
           :key="amount" hide-details color="teal" />
       </fieldset>
-    </label>
+    </div>
 
-    <label class="d-block mt-6">
+    <div class="d-block mt-6">
       <span class="subtitle-2">Количество отзывов (от)</span>
       <v-numeric outlined v-model="filters.reviewsAmount" dense :min="0" :use-grouping="false" />
-    </label>
+    </div>
 
-    <label>
+    <div>
+      <span class="subtitle-2">Цена</span> {{ pricesRange }}
+      <range-filter v-model="pricesRange" :max="prices.max" color="teal" />
+    </div>
+
+    <div>
       <span class="subtitle-2">Цена до</span>
       <v-slider v-model="filters.maxPrice" :max="prices.max" thumb-label color="teal" track-color="teal" />
-    </label>
+    </div>
 
     <div class="d-flex flex-column align-stretch">
       <v-btn @click="applyFilters" depressed class="mb-2 deep-purple darken-3 white--text">
@@ -44,6 +47,7 @@
 </template>
 
 <script>
+import RangeFilter from '@/components/RangeFilter';
 import { CountFormatter } from '@/utils/CountFormatter'
 
 const defaultFilters = {
@@ -58,6 +62,10 @@ const reviewFormatter = new CountFormatter(['звезда', 'звезды', 'з�
 export default {
   name: 'HotelsFilter',
 
+  components: {
+    RangeFilter,
+  },
+
   props: {
     hotels: {
       type: Array,
@@ -68,6 +76,7 @@ export default {
   data() {
     return {
       filters: { ...defaultFilters },
+      pricesRange: [0, 4000]
     }
   },
 
@@ -79,7 +88,19 @@ export default {
         max: Math.max(...prices)
       }
     },
+    // filteredHotels() {
+    //   return this.filterHotels()
+    // }
   },
+
+  // watch: {
+  //   filteredHotels: {
+  //     deep: true,
+  //     handler(value) {
+  //       this.$emit('filter', value)
+  //     }
+  //   }
+  // },
 
   methods: {
     applyFilters() {
